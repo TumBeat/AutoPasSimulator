@@ -29,13 +29,45 @@ public:
         // No-op as nothing should happen here
     }
 
-    KOKKOS_INLINE_FUNCTION
-    void SoAFunctorSingleKokkos(Particle_T::template KokkosSoAArraysType<MemSpace>& soa, bool newton3) final {
-        // TODO: implement with operator() semantics
+    void SoAFunctorPair(autopas::SoAView<SoAArraysType> soa1, autopas::SoAView<SoAArraysType> soa2, bool newton3) final {
+        // No-op as nothing should happen here
     }
 
     KOKKOS_INLINE_FUNCTION
-    void SoAFunctorPairKokkos(Particle_T::template KokkosSoAArraysType<MemSpace>& soa1, Particle_T::template KokkosSoAArraysType<MemSpace>& soa2, bool newton3) final {
+    void SoAFunctorSingleKokkos(int i, const Particle_T::KokkosSoAArraysType& soa, bool newton3) final {
+        // TODO: size() is not (yet) KOKKOS_INLINE_FUNCTION
+        for (int j = 0; j < soa.size() && j != i; ++j) {
+            // This is oriented on the SoAKernel of autopas' LJFunctorAVX
+            const auto x1 = soa.template operator()<ParticleType::AttributeNames::posX, true, false>(i);
+            const auto y1 = soa.template operator()<ParticleType::AttributeNames::posY, true, false>(i);
+            const auto z1 = soa.template operator()<ParticleType::AttributeNames::posZ, true, false>(i);
+
+            const auto x2 = soa.template operator()<ParticleType::AttributeNames::posX, true, false>(j);
+            const auto y2 = soa.template operator()<ParticleType::AttributeNames::posY, true, false>(j);
+            const auto z2 = soa.template operator()<ParticleType::AttributeNames::posZ, true, false>(j);
+
+            const auto drX = x1 - x2;
+            const auto drY = y1 - y2;
+            const auto drZ = z1 - z2;
+
+            const auto drX2 = drX * drX;
+            const auto drY2 = drY * drY;
+            const auto drZ2 = drZ * drZ;
+
+            const auto dr2 = drX2 + drY2 + drZ2;
+
+            if (dr2 > _cutoffSquared) {
+                return;
+            }
+
+            // TODO: mixing calculations goes here
+
+            // TODO: LJ force calculation goes here
+        }
+    }
+
+    KOKKOS_INLINE_FUNCTION
+    void SoAFunctorPairKokkos(Particle_T::KokkosSoAArraysType& soa1, Particle_T::KokkosSoAArraysType& soa2, bool newton3) final {
         // TODO: implement with operator() semantics
     }
 

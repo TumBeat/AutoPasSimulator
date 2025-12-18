@@ -10,6 +10,7 @@
 extern template class autopas::AutoPas<ParticleType>;
 
 const size_t N = 100;
+const size_t ITERATIONS = 10;
 
 template <class ReturnType, class FunctionType>
 ReturnType applyWithChosenFunctor(FunctionType f) {
@@ -28,7 +29,34 @@ int main(int argc, char** argv) {
         autoPasInstance.reserve(N);
         utils::Setup::fillParticles(autoPasInstance, N);
 
-        applyWithChosenFunctor<bool>([&](auto && functor) { return autoPasInstance.computeInteractions(&functor); });
+        // TODO: forEachKokkos() seems to produce some kind of issue with the dual view
+        // autoPasInstance.forEachKokkos(KOKKOS_LAMBDA(int i, autopas::utils::KokkosStorage<ParticleType>& storage) {
+        //     storage.operator()<ParticleType::AttributeNames::forceX, true, false>(i) = 12.5;
+        // });
+
+        for (int i = 0; i < ITERATIONS; ++i) {
+            applyWithChosenFunctor<bool>([&](auto && functor) { return autoPasInstance.computeInteractions(&functor); });
+        }
+
+        autoPasInstance.forEachKokkos(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<ParticleType>& storage) {
+            storage.operator()<ParticleType::AttributeNames::forceX, true, false>(i) *= 0.5;
+        });
+
+        bool test = true;
+        autoPasInstance.reduceKokkos<bool, Kokkos::LAnd<bool>>(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<ParticleType>& storage, bool& local) {
+            double fX = storage.operator()<ParticleType::AttributeNames::forceX, true, false>(i);
+            if (fX == 10.) {
+                local &= true;
+            }
+            else {
+                local &= false;
+            }
+        }, test);
+
+        for (auto& p : autoPasInstance) {
+            double fX = p.operator()<ParticleType::AttributeNames::forceX>();
+            std::cout << fX << std::endl;
+        }
 
         autoPasInstance.finalize();
     }

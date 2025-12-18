@@ -33,8 +33,7 @@ public:
         ownershipState
       };
 
-    template <class MemSpace>
-    using KokkosSoAArraysType = autopas::utils::KokkosSoA<MemSpace, size_t* /*id*/, double* /*x*/, double* /*y*/, double* /*z*/,
+    using KokkosSoAArraysType = autopas::utils::KokkosSoA<size_t* /*id*/, double* /*x*/, double* /*y*/, double* /*z*/,
                                        double* /*rebuildX*/, double* /*rebuildY*/, double* /*rebuildZ*/,
                                        double* /*vx*/, double* /*vy*/, double* /*vz*/, double* /*fx*/, double* /*fy*/,
                                        double* /*fz*/, double* /*oldFx*/, double* /*oldFy*/, double* /*oldFz*/,
@@ -49,8 +48,7 @@ public:
 
     template <AttributeNames attribute>
     constexpr auto& operator() () {
-        auto value = get<attribute>();
-        return value;
+        return get<attribute>();
     }
 
     template <AttributeNames attribute, std::enable_if_t<attribute == ptr, bool> = true>
@@ -59,7 +57,7 @@ public:
     }
 
     template <AttributeNames attribute, std::enable_if_t<attribute != ptr, bool> = true>
-    constexpr std::tuple_element<attribute, SoAArraysType>::type::value_type get() const {
+    constexpr std::tuple_element<attribute, SoAArraysType>::type::value_type& get() {
         if constexpr (attribute == id) {
             return _id;
         } else if constexpr (attribute == posX) {
@@ -92,6 +90,49 @@ public:
             return _oldF[1];
         } else if constexpr (attribute == oldForceZ) {
             return _oldF[2];
+        } else if constexpr (attribute == typeId) {
+            return _typeId;
+        } else if constexpr (attribute == ownershipState) {
+            return _state;
+        } else {
+            autopas::utils::ExceptionHandler::exception("ParticleType::get() unknown attribute {}", attribute);
+        }
+    }
+
+    template <AttributeNames attribute, std::enable_if_t<attribute != ptr, bool> = true>
+    constexpr std::tuple_element<attribute, SoAArraysType>::type::value_type get() const {
+        if constexpr (attribute == id) {
+            return _id;
+        } else if constexpr (attribute == posX) {
+            return _r.at(0);
+        } else if constexpr (attribute == posY) {
+            return _r.at(1);
+        } else if constexpr (attribute == posZ) {
+            return _r.at(2);
+        } else if constexpr (attribute == rebuildX) {
+            return _rRebuild.at(0);
+        } else if constexpr (attribute == rebuildY) {
+            return _rRebuild.at(1);
+        } else if constexpr (attribute == rebuildZ) {
+            return _rRebuild.at(2);
+        } else if constexpr (attribute == velocityX) {
+            return _v.at(0);
+        } else if constexpr (attribute == velocityY) {
+            return _v.at(1);
+        } else if constexpr (attribute == velocityZ) {
+            return _v.at(2);
+        } else if constexpr (attribute == forceX) {
+            return _f.at(0);
+        } else if constexpr (attribute == forceY) {
+            return _f.at(1);
+        } else if constexpr (attribute == forceZ) {
+            return _f.at(2);
+        } else if constexpr (attribute == oldForceX) {
+            return _oldF.at(0);
+        } else if constexpr (attribute == oldForceY) {
+            return _oldF.at(1);
+        } else if constexpr (attribute == oldForceZ) {
+            return _oldF.at(2);
         } else if constexpr (attribute == typeId) {
             return _typeId;
         } else if constexpr (attribute == ownershipState) {
