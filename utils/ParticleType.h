@@ -30,6 +30,7 @@ public:
         oldForceY,
         oldForceZ,
         typeId,
+        mass,
         ownershipState
       };
 
@@ -37,14 +38,14 @@ public:
                                        double* /*rebuildX*/, double* /*rebuildY*/, double* /*rebuildZ*/,
                                        double* /*vx*/, double* /*vy*/, double* /*vz*/, double* /*fx*/, double* /*fy*/,
                                        double* /*fz*/, double* /*oldFx*/, double* /*oldFy*/, double* /*oldFz*/,
-                                       size_t* /*typeid*/, autopas::OwnershipState* /*ownershipState*/>;
+                                       size_t* /*typeid*/, double* /*mass*/, autopas::OwnershipState* /*ownershipState*/>;
 
     using SoAArraysType =
       autopas::utils::SoAType<ParticleType *, size_t /*id*/, double /*x*/, double /*y*/, double /*z*/,
                                        double /*rebuildX*/, double /*rebuildY*/, double /*rebuildZ*/,
                                        double /*vx*/, double /*vy*/, double /*vz*/, double /*fx*/, double /*fy*/,
                                        double /*fz*/, double /*oldFx*/, double /*oldFy*/, double /*oldFz*/,
-                                       size_t /*typeid*/, autopas::OwnershipState /*ownershipState*/>::Type;
+                                       size_t /*typeid*/, double /*mass*/, autopas::OwnershipState /*ownershipState*/>::Type;
 
     template <AttributeNames attribute>
     constexpr auto& operator() () {
@@ -92,6 +93,8 @@ public:
             return _oldF[2];
         } else if constexpr (attribute == typeId) {
             return _typeId;
+        } else if constexpr (attribute == mass) {
+            return _mass;
         } else if constexpr (attribute == ownershipState) {
             return _state;
         } else {
@@ -135,6 +138,8 @@ public:
             return _oldF.at(2);
         } else if constexpr (attribute == typeId) {
             return _typeId;
+        } else if constexpr (attribute == mass) {
+            return _mass;
         } else if constexpr (attribute == ownershipState) {
             return _state;
         } else {
@@ -178,6 +183,8 @@ public:
             _oldF[2] = value;
         } else if constexpr (attribute == typeId) {
             _typeId = value;
+        } else if constexpr (attribute == mass) {
+            _mass = value;
         } else if constexpr (attribute == ownershipState) {
            _state = value;
         } else {
@@ -217,6 +224,10 @@ public:
 
     void setID(const size_t id) {
         _id = id;
+    }
+
+    void setMass(double mass) {
+        _mass = mass;
     }
 
     autopas::OwnershipState getOwnershipState() const {
@@ -270,6 +281,8 @@ private:
     std::array<double, 3> _f {};
 
     std::array<double, 3> _oldF {};
+
+    double _mass = 0.;
 
     size_t _id = 0;
 

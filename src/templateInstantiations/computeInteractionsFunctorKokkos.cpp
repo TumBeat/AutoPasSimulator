@@ -8,4 +8,8 @@
 #include <utils/ParticleType.h>
 #include <utils/FunctorKokkos.h>
 
+#ifdef KOKKOS_ENABLE_CUDA
 template bool autopas::AutoPas<ParticleType>::computeInteractions(FunctorKokkos<ParticleType, Kokkos::CudaSpace> *);
+#else
+template bool autopas::AutoPas<ParticleType>::computeInteractions(FunctorKokkos<ParticleType, Kokkos::HostSpace> *);
+#endif
