@@ -271,7 +271,6 @@ public:
 
 private:
 
-    // TODO: replace with sth else when allowing AoS on the GPU
     std::array<double, 3> _r {};
 
     std::array<double, 3> _rRebuild {};

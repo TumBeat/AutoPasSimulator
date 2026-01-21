@@ -137,10 +137,12 @@ int main(int argc, char** argv) {
             velocityTimer.stop();
 
 
+            /*
             for (auto p = autoPasInstance.begin(autopas::IteratorBehavior::owned); p.isValid(); ++p) {
                 double fX = p->operator()<ParticleType::AttributeNames::forceX>();
                 std::cout << fX << std::endl;
             }
+            */
 
         }
 

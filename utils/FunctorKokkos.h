@@ -198,6 +198,37 @@ public:
         });
     }
 
+    constexpr static auto getNeededAttr() {
+        return std::array<typename Particle_T::AttributeNames, 9>{
+            Particle_T::AttributeNames::id,
+            Particle_T::AttributeNames::posX,
+            Particle_T::AttributeNames::posY,
+            Particle_T::AttributeNames::posZ,
+            Particle_T::AttributeNames::forceX,
+            Particle_T::AttributeNames::forceY,
+            Particle_T::AttributeNames::forceZ,
+            Particle_T::AttributeNames::typeId,
+            Particle_T::AttributeNames::ownershipState,
+        };
+    }
+
+    constexpr static auto getNeededAttr(std::false_type) {
+        return std::array<typename Particle_T::AttributeNames, 6>{
+            Particle_T::AttributeNames::id,
+            Particle_T::AttributeNames::posX,
+            Particle_T::AttributeNames::posY,
+            Particle_T::AttributeNames::posZ,
+            Particle_T::AttributeNames::typeId,
+            Particle_T::AttributeNames::ownershipState};
+    }
+
+    constexpr static auto getComputedAttr() {
+        return std::array<typename Particle_T::AttributeNames, 3>{
+            Particle_T::AttributeNames::forceX,
+            Particle_T::AttributeNames::forceY,
+            Particle_T::AttributeNames::forceZ
+        };
+    }
 
     /* Interface required stuff */
     std::string getName() final {
