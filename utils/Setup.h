@@ -11,7 +11,7 @@
 #include "autopas/options/InteractionTypeOption.h"
 #include "autopas/options/Newton3Option.h"
 
-#include <utils/ParticleType.h>
+#include <utils/KokkosParticle.h>
 
 #include "Configuration.h"
 
@@ -40,7 +40,7 @@ namespace utils {
             std::default_random_engine generator;
 
             for (int i = 0; i < config.getNumParticles(); i++) {
-                ParticleType p {};
+                KokkosParticle p {};
                 p.setF({0.,0.,0.});
                 p.setR({distribution(generator), distribution(generator), distribution(generator)});
                 p.setID(i);
@@ -50,7 +50,7 @@ namespace utils {
             }
 
             for (int i = 0; i < config.getNumHalos(); i++) {
-                ParticleType p {};
+                KokkosParticle p {};
                 p.setF({0.,0.,0.});
                 p.setR({haloDistribution(generator), distribution(generator), distribution(generator)});
                 p.setID(config.getNumParticles() + i);

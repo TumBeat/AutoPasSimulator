@@ -7,6 +7,6 @@
  */
 
 #include "autopas/AutoPasImpl.h"
-#include "utils/ParticleType.h"
+#include "utils/KokkosParticle.h"
 
-template class autopas::AutoPas<ParticleType>;
+template class autopas::AutoPas<KokkosParticle>;

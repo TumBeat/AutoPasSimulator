@@ -5,11 +5,14 @@
  */
 
 #pragma once
+#include "autopas/particles/ParticleDefinitions.h"
 
-class ParticleType {
+class KokkosParticle {
 
 public:
-    ParticleType() {};
+    KokkosParticle() = default;
+
+    using ParticleSoAFloatPrecision = double;
 
     enum AttributeNames : size_t {
         ptr,
@@ -41,7 +44,7 @@ public:
                                        size_t* /*typeid*/, double* /*mass*/, autopas::OwnershipState* /*ownershipState*/>;
 
     using SoAArraysType =
-      autopas::utils::SoAType<ParticleType *, size_t /*id*/, double /*x*/, double /*y*/, double /*z*/,
+      autopas::utils::SoAType<KokkosParticle *, size_t /*id*/, double /*x*/, double /*y*/, double /*z*/,
                                        double /*rebuildX*/, double /*rebuildY*/, double /*rebuildZ*/,
                                        double /*vx*/, double /*vy*/, double /*vz*/, double /*fx*/, double /*fy*/,
                                        double /*fz*/, double /*oldFx*/, double /*oldFy*/, double /*oldFz*/,

@@ -3,12 +3,12 @@
 #include <autopas/AutoPasDecl.h>
 
 
-#include <utils/ParticleType.h>
+#include <utils/KokkosParticle.h>
 #include <utils/FunctorKokkos.h>
 #include <utils/Setup.h>
 #include "utils/Configuration.h"
 
-extern template class autopas::AutoPas<ParticleType>;
+extern template class autopas::AutoPas<KokkosParticle>;
 
 #ifdef KOKKOS_ENABLE_CUDA
 using DeviceSpace = Kokkos::CudaSpace;
@@ -23,9 +23,9 @@ constexpr bool forEachHostFlag = true;
 template <class ReturnType, class FunctionType>
 ReturnType applyWithChosenFunctor(FunctionType f) {
 #ifdef KOKKOS_ENABLE_CUDA
-    return f(FunctorKokkos<ParticleType, DeviceSpace>{3.});
+    return f(FunctorKokkos<KokkosParticle, DeviceSpace>{3.});
 #else
-    return f(FunctorKokkos<ParticleType, DeviceSpace>{3.});
+    return f(FunctorKokkos<KokkosParticle, DeviceSpace>{3.});
 #endif
 }
 
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     {
         Configuration config {};
         config.parseConfig(argc, argv);
-        autopas::AutoPas<ParticleType> autoPasInstance = autopas::AutoPas<ParticleType>(std::cout);
+        autopas::AutoPas<KokkosParticle> autoPasInstance = autopas::AutoPas<KokkosParticle>(std::cout);
 
         // TODO: options for disabling tuning completely
         utils::Setup::provideOptions(autoPasInstance, config);
@@ -55,25 +55,25 @@ int main(int argc, char** argv) {
             // 1. Position Update and Force reset
             positionTimer.start();
             Kokkos::Profiling::pushRegion("Position Update");
-            autoPasInstance.forEachKokkos<ForEachSpace::execution_space>(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<ParticleType>& storage) {
+            autoPasInstance.forEachKokkos<ForEachSpace::execution_space>(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<KokkosParticle>& storage) {
 
-                const auto mass = storage.operator()<ParticleType::AttributeNames::mass, true, forEachHostFlag>(i);
-                auto vX = storage.operator()<ParticleType::AttributeNames::velocityX, true, forEachHostFlag>(i);
-                auto vY = storage.operator()<ParticleType::AttributeNames::velocityY, true, forEachHostFlag>(i);
-                auto vZ = storage.operator()<ParticleType::AttributeNames::velocityZ, true, forEachHostFlag>(i);
+                const auto mass = storage.operator()<KokkosParticle::AttributeNames::mass, true, forEachHostFlag>(i);
+                auto vX = storage.operator()<KokkosParticle::AttributeNames::velocityX, true, forEachHostFlag>(i);
+                auto vY = storage.operator()<KokkosParticle::AttributeNames::velocityY, true, forEachHostFlag>(i);
+                auto vZ = storage.operator()<KokkosParticle::AttributeNames::velocityZ, true, forEachHostFlag>(i);
 
-                auto fX = storage.operator()<ParticleType::AttributeNames::forceX, true, forEachHostFlag>(i);
-                auto fY = storage.operator()<ParticleType::AttributeNames::forceY, true, forEachHostFlag>(i);
-                auto fZ = storage.operator()<ParticleType::AttributeNames::forceZ, true, forEachHostFlag>(i);
+                auto fX = storage.operator()<KokkosParticle::AttributeNames::forceX, true, forEachHostFlag>(i);
+                auto fY = storage.operator()<KokkosParticle::AttributeNames::forceY, true, forEachHostFlag>(i);
+                auto fZ = storage.operator()<KokkosParticle::AttributeNames::forceZ, true, forEachHostFlag>(i);
 
-                storage.operator()<ParticleType::AttributeNames::oldForceX, true, forEachHostFlag>(i) = fX;
-                storage.operator()<ParticleType::AttributeNames::oldForceY, true, forEachHostFlag>(i) = fY;
-                storage.operator()<ParticleType::AttributeNames::oldForceZ, true, forEachHostFlag>(i) = fZ;
+                storage.operator()<KokkosParticle::AttributeNames::oldForceX, true, forEachHostFlag>(i) = fX;
+                storage.operator()<KokkosParticle::AttributeNames::oldForceY, true, forEachHostFlag>(i) = fY;
+                storage.operator()<KokkosParticle::AttributeNames::oldForceZ, true, forEachHostFlag>(i) = fZ;
 
                 // No global force, therefore 0
-                storage.operator()<ParticleType::AttributeNames::forceX, true, forEachHostFlag>(i) = 5.;
-                storage.operator()<ParticleType::AttributeNames::forceY, true, forEachHostFlag>(i) = 5.;
-                storage.operator()<ParticleType::AttributeNames::forceZ, true, forEachHostFlag>(i) = 5.;
+                storage.operator()<KokkosParticle::AttributeNames::forceX, true, forEachHostFlag>(i) = 5.;
+                storage.operator()<KokkosParticle::AttributeNames::forceY, true, forEachHostFlag>(i) = 5.;
+                storage.operator()<KokkosParticle::AttributeNames::forceZ, true, forEachHostFlag>(i) = 5.;
 
                 vX *= deltaT;
                 vY *= deltaT;
@@ -87,9 +87,9 @@ int main(int argc, char** argv) {
                 const auto displacementY = vY + fY;
                 const auto displacementZ = vZ + fZ;
 
-                storage.operator()<ParticleType::AttributeNames::posX, true, forEachHostFlag>(i) = displacementX + storage.operator()<ParticleType::AttributeNames::posX, true, forEachHostFlag>(i);
-                storage.operator()<ParticleType::AttributeNames::posY, true, forEachHostFlag>(i) = displacementY + storage.operator()<ParticleType::AttributeNames::posY, true, forEachHostFlag>(i);
-                storage.operator()<ParticleType::AttributeNames::posZ, true, forEachHostFlag>(i) = displacementZ + storage.operator()<ParticleType::AttributeNames::posZ, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::posX, true, forEachHostFlag>(i) = displacementX + storage.operator()<KokkosParticle::AttributeNames::posX, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::posY, true, forEachHostFlag>(i) = displacementY + storage.operator()<KokkosParticle::AttributeNames::posY, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::posZ, true, forEachHostFlag>(i) = displacementZ + storage.operator()<KokkosParticle::AttributeNames::posZ, true, forEachHostFlag>(i);
 
             }, autopas::IteratorBehavior::owned);
             Kokkos::Profiling::popRegion();
@@ -112,25 +112,25 @@ int main(int argc, char** argv) {
             // 3. Velocity update
             velocityTimer.start();
             Kokkos::Profiling::pushRegion("Velocity Update");
-            autoPasInstance.forEachKokkos<ForEachSpace::execution_space>(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<ParticleType>& storage) {
+            autoPasInstance.forEachKokkos<ForEachSpace::execution_space>(KOKKOS_LAMBDA(int i, const autopas::utils::KokkosStorage<KokkosParticle>& storage) {
 
-                const auto mass = storage.operator()<ParticleType::AttributeNames::mass, true, forEachHostFlag>(i);
+                const auto mass = storage.operator()<KokkosParticle::AttributeNames::mass, true, forEachHostFlag>(i);
 
-                const auto fX = storage.operator()<ParticleType::AttributeNames::forceX, true, forEachHostFlag>(i);
-                const auto fY = storage.operator()<ParticleType::AttributeNames::forceY, true, forEachHostFlag>(i);
-                const auto fZ = storage.operator()<ParticleType::AttributeNames::forceZ, true, forEachHostFlag>(i);
+                const auto fX = storage.operator()<KokkosParticle::AttributeNames::forceX, true, forEachHostFlag>(i);
+                const auto fY = storage.operator()<KokkosParticle::AttributeNames::forceY, true, forEachHostFlag>(i);
+                const auto fZ = storage.operator()<KokkosParticle::AttributeNames::forceZ, true, forEachHostFlag>(i);
 
-                const auto oldFx = storage.operator()<ParticleType::AttributeNames::oldForceX, true, forEachHostFlag>(i);
-                const auto oldFy = storage.operator()<ParticleType::AttributeNames::oldForceY, true, forEachHostFlag>(i);
-                const auto oldFz = storage.operator()<ParticleType::AttributeNames::oldForceZ, true, forEachHostFlag>(i);
+                const auto oldFx = storage.operator()<KokkosParticle::AttributeNames::oldForceX, true, forEachHostFlag>(i);
+                const auto oldFy = storage.operator()<KokkosParticle::AttributeNames::oldForceY, true, forEachHostFlag>(i);
+                const auto oldFz = storage.operator()<KokkosParticle::AttributeNames::oldForceZ, true, forEachHostFlag>(i);
 
                 const auto vUpdateX = (fX + oldFx) * (deltaT / (2 * mass));
                 const auto vUpdateY = (fY + oldFy) * (deltaT / (2 * mass));
                 const auto vUpdateZ = (fZ + oldFz) * (deltaT / (2 * mass));
 
-                storage.operator()<ParticleType::AttributeNames::velocityX, true, forEachHostFlag>(i) = vUpdateX + storage.operator()<ParticleType::AttributeNames::velocityX, true, forEachHostFlag>(i);
-                storage.operator()<ParticleType::AttributeNames::velocityY, true, forEachHostFlag>(i) = vUpdateY + storage.operator()<ParticleType::AttributeNames::velocityX, true, forEachHostFlag>(i);
-                storage.operator()<ParticleType::AttributeNames::velocityZ, true, forEachHostFlag>(i) = vUpdateZ + storage.operator()<ParticleType::AttributeNames::velocityX, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::velocityX, true, forEachHostFlag>(i) = vUpdateX + storage.operator()<KokkosParticle::AttributeNames::velocityX, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::velocityY, true, forEachHostFlag>(i) = vUpdateY + storage.operator()<KokkosParticle::AttributeNames::velocityX, true, forEachHostFlag>(i);
+                storage.operator()<KokkosParticle::AttributeNames::velocityZ, true, forEachHostFlag>(i) = vUpdateZ + storage.operator()<KokkosParticle::AttributeNames::velocityX, true, forEachHostFlag>(i);
 
             }, autopas::IteratorBehavior::owned);
             Kokkos::Profiling::popRegion();
