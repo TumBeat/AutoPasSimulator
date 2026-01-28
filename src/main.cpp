@@ -38,6 +38,8 @@ int main(int argc, char** argv) {
         config.parseConfig(argc, argv);
         autopas::AutoPas<KokkosParticle> autoPasInstance = autopas::AutoPas<KokkosParticle>(std::cout);
 
+        std::cout << typeid(KokkosParticle::ParticleSoAFloatPrecision).name() << std::endl;
+
         // TODO: options for disabling tuning completely
         utils::Setup::provideOptions(autoPasInstance, config);
         autoPasInstance.init();
