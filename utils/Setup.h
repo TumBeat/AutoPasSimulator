@@ -35,8 +35,8 @@ namespace utils {
         template <class Container>
         void static fillParticles(Container& autopasInstance, const Configuration& config) {
 
-            std::uniform_real_distribution<double> distribution(config.getBoxMin(),config.getBoxMax());
-            std::uniform_real_distribution<double> haloDistribution(config.getBoxMax() + 0.1 ,config.getBoxMax() + config.getCutoff());
+            std::uniform_real_distribution<KokkosParticle::ParticleSoAFloatPrecision> distribution(config.getBoxMin(),config.getBoxMax());
+            std::uniform_real_distribution<KokkosParticle::ParticleSoAFloatPrecision> haloDistribution(config.getBoxMax() + 0.1 ,config.getBoxMax() + config.getCutoff());
             std::default_random_engine generator;
 
             for (int i = 0; i < config.getNumParticles(); i++) {

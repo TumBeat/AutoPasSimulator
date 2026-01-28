@@ -12,7 +12,7 @@ class KokkosParticle {
 public:
     KokkosParticle() = default;
 
-    using ParticleSoAFloatPrecision = double;
+    using ParticleSoAFloatPrecision = float;
 
     enum AttributeNames : size_t {
         ptr,
@@ -37,18 +37,18 @@ public:
         ownershipState
       };
 
-    using KokkosSoAArraysType = autopas::utils::KokkosSoA<size_t* /*id*/, double* /*x*/, double* /*y*/, double* /*z*/,
-                                       double* /*rebuildX*/, double* /*rebuildY*/, double* /*rebuildZ*/,
-                                       double* /*vx*/, double* /*vy*/, double* /*vz*/, double* /*fx*/, double* /*fy*/,
-                                       double* /*fz*/, double* /*oldFx*/, double* /*oldFy*/, double* /*oldFz*/,
-                                       size_t* /*typeid*/, double* /*mass*/, autopas::OwnershipState* /*ownershipState*/>;
+    using KokkosSoAArraysType = autopas::utils::KokkosSoA<size_t* /*id*/, ParticleSoAFloatPrecision* /*x*/, ParticleSoAFloatPrecision* /*y*/, ParticleSoAFloatPrecision* /*z*/,
+                                       ParticleSoAFloatPrecision* /*rebuildX*/, ParticleSoAFloatPrecision* /*rebuildY*/, ParticleSoAFloatPrecision* /*rebuildZ*/,
+                                       ParticleSoAFloatPrecision* /*vx*/, ParticleSoAFloatPrecision* /*vy*/, ParticleSoAFloatPrecision* /*vz*/, ParticleSoAFloatPrecision* /*fx*/, ParticleSoAFloatPrecision* /*fy*/,
+                                       ParticleSoAFloatPrecision* /*fz*/, ParticleSoAFloatPrecision* /*oldFx*/, ParticleSoAFloatPrecision* /*oldFy*/, ParticleSoAFloatPrecision* /*oldFz*/,
+                                       size_t* /*typeid*/, ParticleSoAFloatPrecision* /*mass*/, autopas::OwnershipState* /*ownershipState*/>;
 
     using SoAArraysType =
-      autopas::utils::SoAType<KokkosParticle *, size_t /*id*/, double /*x*/, double /*y*/, double /*z*/,
-                                       double /*rebuildX*/, double /*rebuildY*/, double /*rebuildZ*/,
-                                       double /*vx*/, double /*vy*/, double /*vz*/, double /*fx*/, double /*fy*/,
-                                       double /*fz*/, double /*oldFx*/, double /*oldFy*/, double /*oldFz*/,
-                                       size_t /*typeid*/, double /*mass*/, autopas::OwnershipState /*ownershipState*/>::Type;
+      autopas::utils::SoAType<KokkosParticle *, size_t /*id*/, ParticleSoAFloatPrecision /*x*/, ParticleSoAFloatPrecision /*y*/, ParticleSoAFloatPrecision /*z*/,
+                                       ParticleSoAFloatPrecision /*rebuildX*/, ParticleSoAFloatPrecision /*rebuildY*/, ParticleSoAFloatPrecision /*rebuildZ*/,
+                                       ParticleSoAFloatPrecision /*vx*/, ParticleSoAFloatPrecision /*vy*/, ParticleSoAFloatPrecision /*vz*/, ParticleSoAFloatPrecision /*fx*/, ParticleSoAFloatPrecision /*fy*/,
+                                       ParticleSoAFloatPrecision /*fz*/, ParticleSoAFloatPrecision /*oldFx*/, ParticleSoAFloatPrecision /*oldFy*/, ParticleSoAFloatPrecision /*oldFz*/,
+                                       size_t /*typeid*/, ParticleSoAFloatPrecision /*mass*/, autopas::OwnershipState /*ownershipState*/>::Type;
 
     template <AttributeNames attribute>
     constexpr auto& operator() () {
@@ -197,27 +197,27 @@ public:
 
     /* AutoPas general required params */
 
-    const std::array<double, 3>& getR() const {
+    const std::array<ParticleSoAFloatPrecision, 3>& getR() const {
         return _r;
     }
 
-    void setR(const std::array<double, 3>& r) {
+    void setR(const std::array<ParticleSoAFloatPrecision, 3>& r) {
         _r = r;
     }
 
-    const std::array<double, 3>& getV() const {
+    const std::array<ParticleSoAFloatPrecision, 3>& getV() const {
         return _v;
     }
 
-    void setV(const std::array<double, 3>& v) {
+    void setV(const std::array<ParticleSoAFloatPrecision, 3>& v) {
         _v = v;
     }
 
-    const std::array<double, 3>& getF() const {
+    const std::array<ParticleSoAFloatPrecision, 3>& getF() const {
         return _f;
     }
 
-    void setF(const std::array<double, 3>& f) {
+    void setF(const std::array<ParticleSoAFloatPrecision, 3>& f) {
         _f = f;
     }
 
@@ -229,7 +229,7 @@ public:
         _id = id;
     }
 
-    void setMass(double mass) {
+    void setMass(ParticleSoAFloatPrecision mass) {
         _mass = mass;
     }
 
@@ -241,7 +241,7 @@ public:
         _state = newState;
     }
 
-    std::array<double, 3> calculateDisplacementSinceRebuild() const {
+    std::array<ParticleSoAFloatPrecision, 3> calculateDisplacementSinceRebuild() const {
         return {_rRebuild[0] - _r[0], _rRebuild[1] - _r[1], _rRebuild[2] - _r[2]};
     }
 
@@ -274,17 +274,17 @@ public:
 
 private:
 
-    std::array<double, 3> _r {};
+    std::array<ParticleSoAFloatPrecision, 3> _r {};
 
-    std::array<double, 3> _rRebuild {};
+    std::array<ParticleSoAFloatPrecision, 3> _rRebuild {};
 
-    std::array<double, 3> _v {};
+    std::array<ParticleSoAFloatPrecision, 3> _v {};
 
-    std::array<double, 3> _f {};
+    std::array<ParticleSoAFloatPrecision, 3> _f {};
 
-    std::array<double, 3> _oldF {};
+    std::array<ParticleSoAFloatPrecision, 3> _oldF {};
 
-    double _mass = 0.;
+    ParticleSoAFloatPrecision _mass = 0.;
 
     size_t _id = 0;
 
